@@ -232,7 +232,7 @@ public class AppTest
     }
 
     @Test
-    public void shouldNotReturnBookInvalidRequest2() {
+    public void shouldNotReturnBookUnfulfilledRequest() {
         Library library= new Library();
         App.addBooks(library);
         App.addUsers(library);
