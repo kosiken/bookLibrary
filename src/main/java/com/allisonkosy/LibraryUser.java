@@ -2,10 +2,11 @@ package com.allisonkosy;
 
 public abstract class LibraryUser {
 
-    protected LibraryUser(String userName, UserType userType, String className) {
+    protected LibraryUser(String userName, UserType userType, String className, Library library) {
         this.userName = userName;
         this.userType = userType;
         this.className = className;
+        this.library = library;
     }
 
     enum UserType {
@@ -18,6 +19,7 @@ public abstract class LibraryUser {
     private String userName;
     private final UserType userType;
     private String className;
+    private final Library library;
 
     public String getClassName() {
         return className;
@@ -37,11 +39,18 @@ public abstract class LibraryUser {
         else return 1;
     }
 
+    public boolean borrowBook(String bookName){
+      String response =  library.borrowBook(userName, bookName);
+      return response.equals("request added");
+    }
+
 
     @Override
     public String toString() {
         return userName;
     }
+
+    public abstract String getRole();
 
 
 }

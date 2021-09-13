@@ -40,6 +40,10 @@ public class BookRequest implements Comparable<BookRequest> {
 
     }
 
+    public LibraryUser getUser() {
+        return user;
+    }
+
     @Override
     public String toString() {
         return "Book " + bookName +

@@ -20,6 +20,7 @@ public class App {
             "Keyshawn67@yahoo.com,0000,Teacher,london\n" +
             "Peyton.Hamill@yahoo.com,0000,Teacher,london\n" +
             "Alexandra.Johns@yahoo.com,0000,Junior Student,london\n" +
+            "lion,0000,Junior Student,london\n" +
             "Thora.Rempel@hotmail.com,0000,Junior Student,london\n" +
             "Elvis_Legros95@hotmail.com,0000,Teacher,london";
 
@@ -31,44 +32,102 @@ public class App {
 
 
     public static void main( String[] args ) {
+        Scanner scanner = new Scanner(System.in);
         logger.info("creating library");
 
-        String[] users = {
-                "Juana.Swaniawski59@hotmail.com", // teacher,
-                "Ruth14@yahoo.com", // senior student,
-                "Crystel_Rodriguez98@hotmail.com" // junior student
-        };
+
         Library library= new Library();
-        App.addBooks(library);
-        App.addUsers(library);
-//        library.borrowBook("Ruth14@yahoo.com", "Cinderella");
-//        library.fulfillRequest();
-//        BookRequest request = library.fulfillRequest();
-//        assertNull(request);
 
-        for (int i = 2; i > -1; i--) {
-            library.borrowBook(users[i], "Cinderella");
+        initializeLibrary(library);
 
-        }
 
-        BookRequest request = library.fulfillRequest();
-        BookRequest request1 = library.fulfillRequest();
-        BookRequest request2 = library.fulfillRequest();
+        login(library, scanner);
 
-        StringBuilder s = new StringBuilder();
-        s.append(request.getPriority() + request.toString())
-                .append("\n")
-                .append(request1.getPriority() + request1.toString())
-                .append("\n")
-                .append(request2.getPriority() + request2.toString());
+        logger.info("Logged in as " + currentUser + " role -> " + currentUser.getRole());
 
-        System.out.println(s);
+        createRequest(library, scanner);
+
 
 
 
     }
 
+    public static void initializeLibrary(Library library) {
+        logger.info("Initializing library");
+        addBooks(library);
+        addUsers(library);
+        createRandomRequests(library, 5);
+        logger.info("Library initialized with 5 random requests in queue");
+
+    }
+
+    public static void login(Library library, Scanner scanner) {
+        int size = library.userSize();
+        library.printAll();
+         int choice = -1;
+
+        System.out.println("Enter a number between 0 and " + (size - 1) + " to select a user from the database" );
+        System.out.println("Enter " + size + " to create a new user ");
+      while (choice == -1) {
+          try {
+
+              choice = scanner.nextInt();
+              logger.info("user entered " + choice);
+          }
+          catch (InputMismatchException e) {
+              logger.error(e);
+              scanner.nextLine();
+          }
+      }
+      if(choice >= size) {
+          scanner.nextLine();
+          addUser(library, scanner);
+      }
+      else {
+          currentUser = library.getUser(choice);
+
+      }
+    }
+
+    public static void createRequest(Library library, Scanner scanner) {
+        System.out.println("Hello " + currentUser);
+        System.out.println("here is a look at the current selection of books");
+        library.printAllBooks();
+        int size = library.bookLength();
+        String bookName = "Invalid book";
+        System.out.println("Enter a number between 0 and " +  (size - 1) + " to select a book");
+        int choice = -1;
+        while (choice == -1) {
+            try {
+
+                choice = scanner.nextInt();
+                logger.info("user entered " + choice);
+                bookName = library.getBookName(choice);
+            }
+            catch (InputMismatchException e) {
+                logger.error(e);
+
+                scanner.nextLine();
+            }
+            catch (ArrayIndexOutOfBoundsException e) {
+                logger.error(e);
+                System.out.println("Invalid option");
+                choice = -1;
+
+                scanner.nextLine();
+            }
+
+        }
+        logger.info("User selected " + bookName );
+
+        library.borrowBook(currentUser.getUserName(), bookName);
+    }
+
+
+
+
     public static void addUsers(Library library) {
+
         String[] lines = csv.split("\n");
         int len = lines.length;
         for (int i = 0; i < len; i++) {
@@ -77,7 +136,14 @@ public class App {
     }
 
     public static void createRandomRequests(Library library, int number) {
+        ArrayList<LibraryUser> users = library.getUsersDatabase();
+        int max = users.size();
+        int titleLength = titles.length;
         for (int i = 0; i < number; i++) {
+           int index = Library.randomQuantity(max);
+            LibraryUser user = users.get(index);
+            library.borrowBook(user.getUserName(), titles[i % titleLength]);
+
 
         }
     }
@@ -88,7 +154,7 @@ public class App {
             library.addBook(book);
         }
     }
-    public static void addUser(Library library) {
+    public static void addUser(Library library, Scanner scanner) {
         String[] questions = {
                 "What is your username: ",
                 "What is your password: ",
@@ -97,7 +163,7 @@ public class App {
         };
 
         int index = 0;
-        Scanner scanner = new Scanner(System.in);
+
         StringBuilder stringBuilder = new StringBuilder();
 
         while (index < 4) {

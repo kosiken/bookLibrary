@@ -1,10 +1,10 @@
 package com.allisonkosy;
 
 public class Book {
-    private int stock;
-    private final String name;
+    private int stock; // amount of copies of book available
+    private final String name; // name of the book
 
-    private final String excerpt;
+    private final String excerpt; // excerpt of the book
 
 
     public Book(String name, String excerpt) {
@@ -33,5 +33,9 @@ public class Book {
         return name;
     }
 
+    /**
+     * Used to check if the book is available
+     * @return true if there it is
+     */
     boolean isAvailable () {return  stock > 0;}
 }
